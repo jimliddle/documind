@@ -20,6 +20,7 @@ Privacy First: Your Gemini API key is stored in localStorage, and all document p
 
 Zero Dependencies: A single HTML file that just works. (Uses Tailwind CSS and Marked.js via CDN).
 
+
 🚀 Getting Started
 
 Download: Save the index.html file to your computer.
@@ -41,6 +42,7 @@ Marked.js: To render beautiful Markdown responses from the AI.
 IndexedDB: For high-performance local data storage.
 
 Gemini 2.5 Flash: For fast and accurate document reasoning.
+
 
 🔒 Privacy & Security
 
