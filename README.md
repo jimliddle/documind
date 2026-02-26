@@ -54,7 +54,9 @@ No Tracking: There are no analytics or third-party trackers.
 Direct Storage: Your documents stay in your browser profile.
 
 Easy Wipe: Use the "Clear All Data" button in settings to instantly delete all local databases and saved keys.
+
 <br/><br/>
+
 📝 License
 
 This project is open-source. Feel free to modify and distribute it as you see fit.
