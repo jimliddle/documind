@@ -32,6 +32,7 @@ Configure: Click the Settings (gear icon) and enter your Google Gemini API Key.
 Import: Click Add HTML Files to populate your sidebar with your local documentation.
 
 Read & Chat: Select a file from the sidebar to view it and start a conversation with the AI.
+<br/><br/>
 
 🛠️ Built With
 
