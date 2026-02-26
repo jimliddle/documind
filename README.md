@@ -5,7 +5,7 @@ DocuMind is a privacy-focused, single-file web application designed to turn your
 
 <img width="1109" height="611" alt="screenshot" src="https://github.com/user-attachments/assets/d90caa30-27f5-426d-9c51-b40abf0c88d9" />
 
-
+<br/><br/>
 ✨ Features
 
 Local Persistence: All HTML files and chat histories are stored directly in your browser's IndexedDB. No backend required.
@@ -19,7 +19,7 @@ Clean Reading UI: Collapsible sidebar for document navigation, Markdown-rendered
 Privacy First: Your Gemini API key is stored in localStorage, and all document processing happens between your browser and the API endpoint.
 
 Zero Dependencies: A single HTML file that just works. (Uses Tailwind CSS and Marked.js via CDN).
-
+<br/><br/>
 
 🚀 Getting Started
 
