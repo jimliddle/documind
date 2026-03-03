@@ -1,14 +1,14 @@
 # DocuMind
 
 
-DocuMind is a privacy-focused, single-file web application designed to turn your static HTML archives into an interactive, AI-powered knowledge base. By leveraging IndexedDB for local storage and the Gemini 2.5 Flash API for intelligence, DocuMind allows you to read and chat with your documents without ever uploading them to a central server.
+DocuMind is a privacy-focused, single-file web application designed to turn your static HTML, PDF and Docx files into an interactive, AI-powered knowledge base. By leveraging IndexedDB for local storage and the Gemini 2.5 Flash API for intelligence, DocuMind allows you to read and chat with your documents without ever uploading them to a central server.
 
 <img width="1109" height="611" alt="screenshot" src="https://github.com/user-attachments/assets/d90caa30-27f5-426d-9c51-b40abf0c88d9" />
 
 <br/><br/>
 ✨ Features
 
-Local Persistence: All HTML files and chat histories are stored directly in your browser's IndexedDB. No backend required.
+Local Persistence: All HTML files, notes, and chat histories are stored directly in your browser's IndexedDB. No backend required.
 
 AI Document Analysis: Integrated chat window powered by Gemini 2.5 Flash to ask questions, summarize content, or find specific details within the current page.
 
@@ -17,6 +17,8 @@ Context-Aware Chat: Automatically feeds the document content to the AI, maintain
 Clean Reading UI: Collapsible sidebar for document navigation, Markdown-rendered AI responses, and an isolated iframe reader.
 
 Privacy First: Your Gemini API key is stored in localStorage, and all document processing happens between your browser and the API endpoint.
+
+Backup and Sharing: Securely Backup and/or share an entire knowledgebase
 
 Zero Dependencies: A single HTML file that just works. (Uses Tailwind CSS and Marked.js via CDN).
 <br/><br/>
