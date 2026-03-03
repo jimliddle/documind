@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocuMind - Interactive Document Library</title>
+    <title>DocuMind - Interactive HTML Library</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Marked.js for Markdown rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -92,6 +92,7 @@
                 </svg>
             </button>
             <h1 class="text-xl font-bold tracking-tight text-indigo-600">DocuMind</h1>
+            <span id="ai-mode-badge" class="hidden text-xs font-medium px-2 py-0.5 rounded-full border"></span>
         </div>
         <div class="flex items-center gap-2">
             <label for="file-upload" class="cursor-pointer bg-indigo-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors">
@@ -185,7 +186,7 @@
 
                         <div id="thinking-indicator" class="px-4 py-2 hidden">
                             <div class="flex items-center gap-2 text-indigo-500 text-xs font-medium">
-                                <span>Gemini is thinking</span>
+                                <span id="thinking-text">Gemini is thinking</span>
                                 <div class="flex gap-1">
                                     <div class="typing-dot"></div>
                                     <div class="typing-dot"></div>
@@ -223,8 +224,8 @@
     <!-- Settings Modal -->
     <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
         <div class="absolute inset-0 modal-backdrop" id="close-settings-overlay"></div>
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 z-10 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 z-10 flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center flex-shrink-0">
                 <h3 class="text-lg font-bold text-gray-800">App Settings</h3>
                 <button id="close-settings" class="text-gray-400 hover:text-gray-600">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -232,33 +233,71 @@
                     </svg>
                 </button>
             </div>
-            <div class="p-6 space-y-6">
+            <div class="p-6 space-y-6 overflow-y-auto">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Gemini API Key</label>
                     <input type="password" id="api-key-input" placeholder="Enter your API key..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                     <p class="mt-2 text-xs text-gray-400 leading-relaxed">Your key is stored locally in your browser and never shared elsewhere.</p>
+                    <div class="flex gap-2 mt-3">
+                        <button id="save-settings" class="flex-1 bg-indigo-600 text-white font-medium py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm">Save API Key</button>
+                        <button id="clear-key" class="flex-1 text-indigo-600 text-sm border border-indigo-200 py-2 rounded-lg hover:bg-indigo-50 transition-colors">Clear API Key</button>
+                    </div>
                 </div>
-                <div class="pt-4 border-t border-gray-100 flex flex-col gap-2">
-                    <button id="save-settings" class="w-full bg-indigo-600 text-white font-medium py-2 rounded-lg hover:bg-indigo-700 transition-colors">Save Key</button>
-                    <button id="clear-key" class="w-full text-indigo-600 text-sm hover:underline py-1">Clear API Key</button>
-                    <div class="pt-4 border-t border-gray-100">
-                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Backup &amp; Transfer</p>
-                        <div class="flex gap-2">
-                            <button id="export-library-btn" class="flex-1 flex items-center justify-center gap-1.5 bg-indigo-50 text-indigo-700 text-sm font-medium py-2 rounded-lg hover:bg-indigo-100 transition-colors border border-indigo-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                Export
-                            </button>
-                            <button id="import-library-btn" class="flex-1 flex items-center justify-center gap-1.5 bg-indigo-50 text-indigo-700 text-sm font-medium py-2 rounded-lg hover:bg-indigo-100 transition-colors border border-indigo-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12" />
-                                </svg>
-                                Import
-                            </button>
+                <div class="pt-4 border-t border-gray-100">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">AI Provider</label>
+                    <div class="flex flex-col gap-2">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="ai-provider" value="gemini" id="provider-gemini" class="accent-indigo-600">
+                            <span class="text-sm text-gray-700">Gemini (Cloud)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="ai-provider" value="local" id="provider-local" class="accent-indigo-600">
+                            <span class="text-sm text-gray-700">Private / Local AI</span>
+                            <span class="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">Experimental</span>
+                        </label>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">Selection saved automatically.</p>
+                    <div id="local-ai-section" class="hidden mt-3 space-y-3">
+                        <div>
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Model</p>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="local-ai-model" value="1b" id="model-1b" class="accent-indigo-600">
+                                    <span class="text-sm text-gray-700">Llama 3.2 1B <span class="text-xs text-gray-400">(~700 MB · faster)</span></span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="local-ai-model" value="3b" id="model-3b" class="accent-indigo-600">
+                                    <span class="text-sm text-gray-700">Llama 3.2 3B <span class="text-xs text-gray-400">(~2 GB · more capable)</span></span>
+                                </label>
+                            </div>
                         </div>
+                        <div class="flex items-center justify-between">
+                            <span id="local-ai-status" class="text-xs text-gray-500">Status: Not loaded</span>
+                            <button id="clear-local-ai-btn" class="text-xs text-red-500 hover:underline">Clear cache</button>
+                        </div>
+                        <p class="text-xs text-gray-400 leading-relaxed">Requires Chrome or Edge (WebGPU). Model downloaded once and cached in your browser. Documents over 15,000 characters are not supported in local mode.</p>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-gray-100">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Backup &amp; Transfer</p>
+                    <div class="flex gap-2">
+                        <button id="export-library-btn" class="flex-1 flex items-center justify-center gap-1.5 bg-indigo-50 text-indigo-700 text-sm font-medium py-2 rounded-lg hover:bg-indigo-100 transition-colors border border-indigo-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Export
+                        </button>
+                        <button id="import-library-btn" class="flex-1 flex items-center justify-center gap-1.5 bg-indigo-50 text-indigo-700 text-sm font-medium py-2 rounded-lg hover:bg-indigo-100 transition-colors border border-indigo-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12" />
+                            </svg>
+                            Import
+                        </button>
                     </div>
                     <button id="clear-db" class="w-full text-red-500 text-sm hover:bg-red-50 py-2 rounded-lg mt-2 border border-red-100 transition-colors font-medium">Clear All Data (Library &amp; Chats)</button>
+                </div>
+                <div class="pt-4 border-t border-gray-100">
+                    <button id="exit-settings-btn" class="w-full bg-gray-100 text-gray-700 font-medium py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm">Exit</button>
                 </div>
             </div>
         </div>
@@ -337,6 +376,12 @@
         let mobileView = 'reader'; // 'reader' | 'chat'
         let tesseractWorker = null; // lazy-loaded only for image PDFs
         let activeTagFilter = null; // string tag name or null for "all"
+        let localAIEngine = null;   // WebLLM engine instance, lazy-loaded
+        const LOCAL_AI_MAX_CHARS = 15000;
+        const LOCAL_AI_MODELS = {
+            '1b': 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
+            '3b': 'Llama-3.2-3B-Instruct-q4f16_1-MLC',
+        };
 
         function isMobile() { return window.innerWidth < 768; }
 
@@ -392,7 +437,16 @@
         const mctChatIcon = document.getElementById('mct-chat-icon');
         const mctDocIcon = document.getElementById('mct-doc-icon');
         const pdfViewer = document.getElementById('pdf-viewer');
-        const tagFilterBar = document.getElementById('tag-filter-bar');
+        const tagFilterBar    = document.getElementById('tag-filter-bar');
+        const aiModeBadge     = document.getElementById('ai-mode-badge');
+        const thinkingText    = document.getElementById('thinking-text');
+        const localAiSection  = document.getElementById('local-ai-section');
+        const localAiStatus   = document.getElementById('local-ai-status');
+        const clearLocalAiBtn = document.getElementById('clear-local-ai-btn');
+        const providerGemini  = document.getElementById('provider-gemini');
+        const providerLocal   = document.getElementById('provider-local');
+        const model1b         = document.getElementById('model-1b');
+        const model3b         = document.getElementById('model-3b');
 
         // --- API Key Management ---
         const API_KEY_STORAGE_KEY = 'documind_gemini_key';
@@ -405,6 +459,13 @@
         function clearStoredApiKey() {
             localStorage.removeItem(API_KEY_STORAGE_KEY);
         }
+
+        const AI_PROVIDER_KEY    = 'documind_ai_provider';
+        const LOCAL_AI_MODEL_KEY = 'documind_local_ai_model';
+        function getStoredAIProvider() { return localStorage.getItem(AI_PROVIDER_KEY) || 'gemini'; }
+        function setStoredAIProvider(v) { localStorage.setItem(AI_PROVIDER_KEY, v); }
+        function getLocalAIModel() { return localStorage.getItem(LOCAL_AI_MODEL_KEY) || '1b'; }
+        function setLocalAIModel(v) { localStorage.setItem(LOCAL_AI_MODEL_KEY, v); }
 
         // --- Database Initialization ---
         async function initDB() {
@@ -599,6 +660,63 @@
                 if (doc) { doc.tags = tags; tx.objectStore('documents').put(doc); }
             };
             return new Promise(res => { tx.oncomplete = res; });
+        }
+
+        // --- AI Mode Badge ---
+        function updateAIModeBadge() {
+            const provider = getStoredAIProvider();
+            if (provider === 'local') {
+                aiModeBadge.textContent = '🔒 Private AI';
+                aiModeBadge.className = 'text-xs font-medium px-2 py-0.5 rounded-full border bg-green-100 text-green-700 border-green-200';
+                aiModeBadge.classList.remove('hidden');
+            } else if (getStoredApiKey()) {
+                aiModeBadge.textContent = '✦ Gemini AI';
+                aiModeBadge.className = 'text-xs font-medium px-2 py-0.5 rounded-full border bg-indigo-100 text-indigo-700 border-indigo-200';
+                aiModeBadge.classList.remove('hidden');
+            } else {
+                aiModeBadge.classList.add('hidden');
+            }
+        }
+
+        // --- Local AI (WebLLM) ---
+        async function initLocalAI() {
+            if (localAIEngine) return;
+            const modelId = LOCAL_AI_MODELS[getLocalAIModel()];
+            thinkingText.textContent = 'Downloading model…';
+            thinkingIndicator.classList.remove('hidden');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            const webllm = await import('https://esm.run/@mlc-ai/web-llm');
+            localAIEngine = await webllm.CreateMLCEngine(modelId, {
+                initProgressCallback: (report) => {
+                    const pct = report.progress ? ` (${Math.round(report.progress * 100)}%)` : '';
+                    thinkingText.textContent = `Downloading model${pct}…`;
+                },
+            });
+        }
+
+        async function callLocalAI(prompt, docContent, history) {
+            const plainText = extractText(docContent).substring(0, LOCAL_AI_MAX_CHARS);
+            const systemPrompt = `You are an expert reading assistant. Below is the plain text content of the document being read. Answer concisely and accurately. Use Markdown for formatting.\n\nDocument Content:\n${plainText}`;
+            const messages = [
+                { role: 'system', content: systemPrompt },
+                ...history.map(h => ({ role: h.role === 'user' ? 'user' : 'assistant', content: h.text })),
+                { role: 'user', content: prompt },
+            ];
+            const reply = await localAIEngine.chat.completions.create({ messages, temperature: 0.6, max_tokens: 1024 });
+            return reply.choices[0].message.content;
+        }
+
+        async function clearLocalAICache() {
+            const keys = await caches.keys();
+            let n = 0;
+            for (const k of keys) {
+                if (k.includes('webllm') || k.includes('mlc-llm') || k.includes('MLC')) {
+                    await caches.delete(k); n++;
+                }
+            }
+            localAIEngine = null;
+            showToast(n > 0 ? 'Model cache cleared.' : 'No cached model found.');
+            localAiStatus.textContent = 'Status: Not loaded';
         }
 
         async function loadDocument(id) {
@@ -914,10 +1032,19 @@
             const text = chatInput.value.trim();
             if (!text || !currentDocId || sendBtn.disabled) return;
 
-            if (!getStoredApiKey()) {
+            const provider = getStoredAIProvider();
+
+            if (provider === 'gemini' && !getStoredApiKey()) {
                 appendMessageToUI('system', 'Please set your Gemini API Key in the settings.');
                 openSettings.click();
                 return;
+            }
+
+            if (provider === 'local') {
+                if (!navigator.gpu) {
+                    appendMessageToUI('system', 'Private AI requires WebGPU (Chrome or Edge). Switch to Gemini in Settings.');
+                    return;
+                }
             }
 
             chatInput.value = '';
@@ -931,6 +1058,16 @@
                 req.onsuccess = () => res(req.result);
             });
 
+            if (provider === 'local') {
+                const docTextLength = (doc.textContent || extractText(doc.content)).length;
+                if (docTextLength > LOCAL_AI_MAX_CHARS) {
+                    thinkingIndicator.classList.add('hidden');
+                    sendBtn.disabled = false;
+                    appendMessageToUI('system', `This document is too long for Private AI (${docTextLength.toLocaleString()} chars; limit ${LOCAL_AI_MAX_CHARS.toLocaleString()}). Switch to Gemini in Settings.`);
+                    return;
+                }
+            }
+
             const cTx = db.transaction('chats', 'readonly');
             const history = await new Promise(res => {
                 const req = cTx.objectStore('chats').index('docId').getAll(IDBKeyRange.only(currentDocId));
@@ -942,9 +1079,18 @@
             uReq.onsuccess = () => appendMessageToUI('user', text, uReq.result);
 
             try {
-                const aiResponse = await callGemini(text, doc.textContent || doc.content, history);
+                let aiResponse;
+                if (provider === 'local') {
+                    await initLocalAI();
+                    thinkingText.textContent = 'Local AI is thinking';
+                    thinkingIndicator.classList.remove('hidden');
+                    aiResponse = await callLocalAI(text, doc.textContent || doc.content, history);
+                } else {
+                    thinkingText.textContent = 'Gemini is thinking';
+                    aiResponse = await callGemini(text, doc.textContent || doc.content, history);
+                }
                 thinkingIndicator.classList.add('hidden');
-                
+
                 const aTx = db.transaction('chats', 'readwrite');
                 const aReq = aTx.objectStore('chats').add({ docId: currentDocId, role: 'model', text: aiResponse, timestamp: Date.now() });
                 aReq.onsuccess = () => appendMessageToUI('model', aiResponse, aReq.result);
@@ -1331,17 +1477,47 @@
         // --- Settings Event Handlers ---
         openSettings.onclick = () => {
             apiKeyInput.value = getStoredApiKey();
+            const provider = getStoredAIProvider();
+            (provider === 'local' ? providerLocal : providerGemini).checked = true;
+            (getLocalAIModel() === '3b' ? model3b : model1b).checked = true;
+            localAiSection.classList.toggle('hidden', provider !== 'local');
+            if (provider === 'local' && !navigator.gpu) {
+                localAiStatus.textContent = 'Status: WebGPU not available in this browser';
+            } else {
+                localAiStatus.textContent = localAIEngine ? 'Status: Loaded ✓' : 'Status: Not loaded';
+            }
             settingsModal.classList.remove('hidden');
         };
         const closeSettingsFn = () => settingsModal.classList.add('hidden');
         closeSettings.onclick = closeSettingsFn;
         closeOverlay.onclick = closeSettingsFn;
+        document.getElementById('exit-settings-btn').onclick = closeSettingsFn;
 
         saveSettings.onclick = () => {
             setStoredApiKey(apiKeyInput.value.trim());
-            showToast("Settings saved.");
-            closeSettingsFn();
+            showToast("API key saved.");
+            updateAIModeBadge();
         };
+
+        [providerGemini, providerLocal].forEach(radio => {
+            radio.onchange = () => {
+                const v = document.querySelector('input[name="ai-provider"]:checked').value;
+                setStoredAIProvider(v);
+                localAiSection.classList.toggle('hidden', v !== 'local');
+                if (v !== 'local') localAIEngine = null;
+                updateAIModeBadge();
+            };
+        });
+
+        [model1b, model3b].forEach(radio => {
+            radio.onchange = () => {
+                setLocalAIModel(document.querySelector('input[name="local-ai-model"]:checked').value);
+                localAIEngine = null;
+                localAiStatus.textContent = 'Status: Not loaded';
+            };
+        });
+
+        clearLocalAiBtn.onclick = clearLocalAICache;
 
         clearKeyBtn.onclick = () => {
             if (confirm("Clear API key?")) {
@@ -1425,6 +1601,7 @@
             try {
                 await initDB();
                 await refreshDocList();
+                updateAIModeBadge();
                 // On mobile the CSS already hides the sidebar; sync JS state to match
                 if (isMobile()) {
                     isSidebarVisible = false;
