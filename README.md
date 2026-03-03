@@ -22,6 +22,8 @@ Privacy First: Your Gemini API key is stored in localStorage, and all document p
 
 Backup and Sharing: Securely Backup and/or share an entire knowledgebase
 
+Tags: Support tags and filtering of documents
+
 Zero Dependencies: A single HTML file that just works. (Uses Tailwind CSS and Marked.js via CDN).
 <br/><br/>
 
