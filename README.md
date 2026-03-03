@@ -3,6 +3,8 @@
 
 DocuMind is a privacy-focused, single-file web application designed to turn your static HTML, PDF and Docx files into an interactive, AI-powered knowledge base. By leveraging IndexedDB for local storage and the Gemini 2.5 Flash API for intelligence, DocuMind allows you to read and chat with your documents without ever uploading them to a central server.
 
+Accessible at: https://jimliddle.github.io/documind/
+
 <img width="1109" height="611" alt="screenshot" src="https://github.com/user-attachments/assets/d90caa30-27f5-426d-9c51-b40abf0c88d9" />
 
 <br/><br/>
